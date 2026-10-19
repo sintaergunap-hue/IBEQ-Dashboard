@@ -934,7 +934,7 @@
       });
     }
 
-    // --- 3. FORMAT POPUP SEJAJAR DAN HANYA SAMPAI PENANGANAN ---
+    // --- 3. FORMAT POPUP SEJAJAR DAN 'TINDAK LANJUT' ---
     function addOilSpillMarker(lat, lng, loc, prov, date, cause, type, est, action) {
       const marker = L.circleMarker([lat, lng], {
         radius: 8,
@@ -961,7 +961,7 @@
             <span style="font-weight:700;">Jenis Tumpahan</span><span>:</span><span style="color:#0284c7; font-weight:700;">${type}</span>
             <span style="font-weight:700;">Estimasi Tumpahan</span><span>:</span><span>${estFormatted}</span>
             <span style="font-weight:700;">Penyebab</span><span>:</span><span>${cause}</span>
-            <span style="font-weight:700;">Penanganan</span><span>:</span><span>${action}</span>
+            <span style="font-weight:700;">Tindak Lanjut</span><span>:</span><span>${action}</span>
           </div>
         </div>
       `);
@@ -1004,7 +1004,7 @@
                H (7) -> Penyebab
                I (8) -> Jenis Tumpahan
                J (9) -> Estimasi Tumpahan
-               K (10)-> Tindak Lanjut / Penanganan
+               K (10)-> Tindak Lanjut
             */
             const loc = row[1] || '-';
             const prov = row[2] || '-';
