@@ -985,7 +985,13 @@
         tbody.innerHTML = '';
 
         if (dataRows.length > 1) {
-          const rows = dataRows.slice(1).filter(r => r.length >= 3 && r[0] !== '');
+          // FILTER STRICT: Mengabaikan baris header 'ID' atau baris non-angka agar total pas 35
+          const rows = dataRows.slice(1).filter(r => {
+            if (!r || r.length < 3) return false;
+            const firstCol = (r[0] || '').trim();
+            return firstCol !== '' && firstCol.toLowerCase() !== 'id' && !isNaN(parseInt(firstCol, 10));
+          });
+
           const totalCount = rows.length;
 
           document.getElementById('oilSpillTotalNum').innerText = totalCount;
@@ -994,7 +1000,7 @@
           rows.forEach((row) => {
             /* 
                PEMETAAN KOLOM SPREADSHEET:
-               A (0) -> ID
+               A (0) -> ID (Angka)
                B (1) -> Lokasi
                C (2) -> Provinsi
                D (3) -> Tanggal Kejadian
