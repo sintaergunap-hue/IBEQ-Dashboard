@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IBEQ Main Dashboard</title>
+  
+  <!-- Leaflet CSS for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js for Donut Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: #031e28;
+      color: #e0f2fe;
+      min-height: 100vh;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* --- TOP NAVBAR HEADER --- */
+    .header {
+      background-color: #062b37;
+      border: 1px solid #0f4859;
+      border-radius: 12px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      position: relative;
+      background: #113c4a;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #1a5669;
+    }
+
+    .star-icon {
+      color: #facc15;
+    }
+
+    .pedal-pill {
+      background-color: #cbd5e1;
+      color: #0f172a;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .title-box h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .title-box p {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      background-color: #0a3847;
+      border: 1px solid #155266;
+      color: #e2e8f0;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .dropdown-select {
+      background-color: #0a3847;
+      border: 1px solid #155266;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .time-badge {
+      background-color: #083342;
+      border: 1px solid #155266;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .btn-cyan {
+      background-color: #06b6d4;
+      color: #042f2e;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .avatar-btn {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      color: #ffffff;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* --- MAIN CONTENT GRID --- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+    }
+
+    /* --- CARD MONITORING IKAL --- */
+    .ikal-card {
+      background-color: #062b37;
+      border: 1px solid #0f4859;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 480px;
+    }
+
+    .card-header-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .card-header-title h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .wave-badge {
+      background-color: #a855f7;
+      color: #ffffff;
+      padding: 4px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ikal-scroll-wrapper {
+      display: flex;
+      gap: 10px;
+      height: 410px;
+    }
+
+    .ikal-scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 4px;
+      scrollbar-width: none;
+    }
+
+    .ikal-scroll-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    .custom-v-scrollbar {
+      width: 14px;
+      background-color: #041f28;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 2px;
+      border: 1px solid #0a3d4f;
+    }
+
+    .scroll-arrow {
+      color: #38bdf8;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .scroll-thumb {
+      width: 8px;
+      height: 80px;
+      background-color: #0ea5e9;
+      border-radius: 4px;
+    }
+
+    .sub-section {
+      border: 1px solid #0e4c5e;
+      border-radius: 10px;
+      padding: 12px;
+      background-color: #04232d;
+    }
+
+    .sub-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .year-tag {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .stat-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat-box {
+      background-color: #021a23;
+      border-radius: 8px;
+      padding: 10px 8px;
+      border: 1px solid #083847;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    .stat-val-large {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .status-card {
+      border-radius: 8px;
+      padding: 10px 12px;
+      background-color: #021a23;
+    }
+
+    .status-card.buruk { border: 1px solid #ef4444; }
+    .status-card.sedang { border: 1px solid #eab308; }
+    .status-card.baik { border: 1px solid #84cc16; }
+
+    .status-card .val-buruk { color: #f87171; font-size: 22px; font-weight: 800; margin-top: 8px; }
+    .status-card .val-sedang { color: #facc15; font-size: 22px; font-weight: 800; margin-top: 8px; }
+    .status-card .val-baik { color: #a3e635; font-size: 22px; font-weight: 800; margin-top: 8px; }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      text-align: left;
+    }
+
+    .custom-table th {
+      color: #94a3b8;
+      padding: 6px 4px;
+      border-bottom: 1px solid #0d3e4d;
+      font-weight: 600;
+    }
+
+    .custom-table td {
+      padding: 8px 4px;
+      color: #e2e8f0;
+      border-bottom: 1px solid #062b37;
+    }
+
+    .pill-status {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .pill-status.baik { background-color: #15803d; color: #dcfce7; }
+    .pill-status.sedang { background-color: #a16207; color: #fef9c3; }
+    .pill-status.buruk { background-color: #b91c1c; color: #fee2e2; }
+
+    .parameter-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .param-pill {
+      border: 1px solid #0ea5e9;
+      color: #e0f2fe;
+      border-radius: 16px;
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+
+    /* --- MAP CONTAINER --- */
+    .map-container {
+      background-color: #062b37;
+      border: 1px solid #0f4859;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      height: 480px;
+    }
+
+    #leaflet-map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .layer-modal {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 1000;
+      width: 280px;
+      background-color: #06232e;
+      border: 1px solid #0d4b5c;
+      border-radius: 8px;
+      padding: 12px;
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .layer-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .btn-hide-layers {
+      width: 100%;
+      background-color: #031821;
+      border: 1px solid #0ea5e9;
+      color: #38bdf8;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .layer-legend-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .legend-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background-color: #02141c;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* --- BOTTOM CAROUSEL PANEL --- */
+    .bottom-panel {
+      background-color: #062b37;
+      border: 1px solid #0f4859;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .bottom-panel-title {
+      width: 120px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .bottom-panel-title h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .carousel-container {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 16px;
+      transition: transform 0.3s ease-in-out;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .carousel-card {
+      min-width: 1450px;
+      background-color: #04232d;
+      border: 1px solid #0e4c5e;
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      gap: 14px;
+    }
+
+    .c-section {
+      border: 1px solid #0b4150;
+      border-radius: 8px;
+      padding: 10px;
+      background-color: #021821;
+    }
+
+    .c-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .chart-box {
+      width: 130px;
+      height: 130px;
+      position: relative;
+    }
+
+    .chart-center-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .chart-center-text .num { font-size: 16px; font-weight: 800; color: #ffffff; }
+    .chart-center-text .lbl { font-size: 8px; color: #94a3b8; }
+
+    .carousel-navigation {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .h-scroll-track {
+      flex: 1;
+      height: 8px;
+      background-color: #031821;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .h-scroll-thumb {
+      width: 250px;
+      height: 100%;
+      background-color: #0ea5e9;
+      border-radius: 4px;
+      position: absolute;
+      left: 0;
+      transition: left 0.2s ease;
+    }
+
+    .nav-arrow {
+      color: #0ea5e9;
+      cursor: pointer;
+    }
+
+    .table-scroll-container {
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    /* PEWARNAAN JENIS TUMPAHAN */
+    .type-cyan { color: #38bdf8; font-weight: 700; }
+    .type-yellow { color: #facc15; font-weight: 700; }
+    .type-red { color: #f87171; font-weight: 700; }
+    
+    /* STYLE UNTUK INFORMASI DENGAN WARNA MERAH */
+    .text-missing { color: #ef4444; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- TOP HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-badge">
+          <i data-lucide="sparkles" class="star-icon" width="20"></i>
+        </div>
+        <span class="pedal-pill">PEDAL</span>
+        <div class="title-box">
+          <h1>IBEQ Main Dashboard</h1>
+          <p>Visualize, analyze, and manage environmental quality in one unified platform.</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="nav-btn"><i data-lucide="home" width="14"></i> Home</button>
+        <select class="dropdown-select">
+          <option>Ocean & Marine</option>
+        </select>
+        <button class="nav-btn" style="padding: 8px;"><i data-lucide="square" width="14"></i></button>
+        <div class="time-badge">19/10/2026, 08.00 WIB</div>
+        <button class="btn-cyan">Share or Export <i data-lucide="external-link" width="14"></i></button>
+        <div class="avatar-btn">AR</div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT GRID -->
+    <main class="main-grid">
+      
+      <!-- MONITORING IKAL CARD -->
+      <section class="ikal-card">
+        <div class="card-header-title">
+          <h2>Monitoring Indeks Kualitas Air Laut</h2>
+          <div class="wave-badge"><i data-lucide="waves" width="16"></i></div>
+        </div>
+
+        <div class="ikal-scroll-wrapper">
+          <div class="ikal-scroll-content" id="ikalScrollContainer">
+            
+            <div class="sub-section">
+              <div class="sub-section-header">
+                <span>Ringkasan IKAL</span>
+                <span class="year-tag">2026</span>
+              </div>
+              <div class="stat-row-3">
+                <div class="stat-box">
+                  <div class="stat-label">IKAL Nasional</div>
+                  <div class="stat-val-large">74,8</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Memenuhi Baku Mutu</div>
+                  <div class="stat-val-large">71%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Titik Pantau</div>
+                  <div class="stat-val-large">200</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-row-3">
+              <div class="status-card buruk">
+                <div class="stat-label">IKAL Buruk</div>
+                <div class="val-buruk">18</div>
+              </div>
+              <div class="status-card sedang">
+                <div class="stat-label">IKAL Sedang</div>
+                <div class="val-sedang">11</div>
+              </div>
+              <div class="status-card baik">
+                <div class="stat-label">IKAL Baik</div>
+                <div class="val-baik">9</div>
+              </div>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-header">
+                <span>3 Indeks Kualitas Air Laut Tertinggi</span>
+                <span style="font-size:10px; color:#64748b;">Nilai IKAL</span>
+              </div>
+              <table class="custom-table">
+                <thead>
+                  <tr><th>No</th><th>Provinsi</th><th>Kategori</th><th>Nilai</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>Bali</td><td><span class="pill-status baik">Baik</span></td><td><strong>84,2</strong></td></tr>
+                  <tr><td>2</td><td>Maluku Utara</td><td><span class="pill-status baik">Baik</span></td><td><strong>82,9</strong></td></tr>
+                  <tr><td>3</td><td>Nusa Tenggara Timur</td><td><span class="pill-status baik">Baik</span></td><td><strong>81,7</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-header">
+                <span>3 Indeks Kualitas Air Laut Terendah</span>
+                <span style="font-size:10px; color:#64748b;">Nilai IKAL</span>
+              </div>
+              <table class="custom-table">
+                <thead>
+                  <tr><th>No</th><th>Provinsi</th><th>Kategori</th><th>Nilai</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>DKI Jakarta</td><td><span class="pill-status buruk">Buruk</span></td><td><strong>45,2</strong></td></tr>
+                  <tr><td>2</td><td>Jawa Barat</td><td><span class="pill-status sedang">Sedang</span></td><td><strong>52,1</strong></td></tr>
+                  <tr><td>3</td><td>Banten</td><td><span class="pill-status sedang">Sedang</span></td><td><strong>58,4</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-header">
+                <span>Parameter Pemantauan IKAL</span>
+                <span style="font-size:11px; color:#38bdf8;">2 periode/tahun</span>
+              </div>
+              <div class="parameter-tags">
+                <span class="param-pill">TSS</span>
+                <span class="param-pill">DO</span>
+                <span class="param-pill">Minyak & Lemak</span>
+                <span class="param-pill">Orthophosphate</span>
+                <span class="param-pill">Amonia Total</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="custom-v-scrollbar">
+            <i data-lucide="chevron-up" class="scroll-arrow" onclick="scrollIKAL(-50)"></i>
+            <div class="scroll-thumb" id="ikalThumb"></div>
+            <i data-lucide="chevron-down" class="scroll-arrow" onclick="scrollIKAL(50)"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- GIS MAP CONTAINER -->
+      <section class="map-container">
+        <div id="leaflet-map"></div>
+
+        <div class="layer-modal">
+          <div class="layer-modal-header">
+            <span>Layer Management</span>
+            <i data-lucide="x" width="14" style="cursor:pointer;"></i>
+          </div>
+          <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px;">Filter <span>▲</span></div>
+          <button class="btn-hide-layers" onclick="toggleOilSpillLayers()">Toggle Oil Spill Markers</button>
+
+          <div style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">▼ Environmental Quality</div>
+          <div class="layer-legend-list">
+            <span class="legend-badge"><span class="dot" style="background:#eab308;"></span> IKAL</span>
+            <span class="legend-badge"><span class="dot" style="background:#22c55e;"></span> Pemulihan</span>
+            <span class="legend-badge"><span class="dot" style="background:#ef4444;"></span> Oil Spill</span>
+            <span class="legend-badge"><span class="dot" style="background:#06b6d4;"></span> Pertek-SLO</span>
+            <span class="legend-badge"><span class="dot" style="background:#8b5cf6;"></span> Area Sensitif</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM CAROUSEL PANEL -->
+    <footer class="bottom-panel">
+      <div class="bottom-panel-title">
+        <h3>Statistik Monitoring Ocean & Marine</h3>
+        <div class="wave-badge" style="width:28px; height:28px;"><i data-lucide="waves" width="16"></i></div>
+      </div>
+
+      <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+          
+          <div class="carousel-card">
+            
+            <!-- TERUMBU KARANG -->
+            <div class="c-section" style="flex: 1;">
+              <div class="c-section-title">Terumbu Karang</div>
+              <div style="display:flex; gap:12px;">
+                <div class="stat-box" style="flex:1;">
+                  <div class="stat-label">Luas Pemulihan Terumbu</div>
+                  <div style="font-size:20px; font-weight:800; color:#38bdf8;">18,42 ha</div>
+                  <div style="font-size:10px; color:#64748b;">67 lokasi kegiatan</div>
+                </div>
+                <div style="flex:1.4;">
+                  <div style="font-size:10px; color:#94a3b8; margin-bottom:4px;">Lokasi Pemulihan Terumbu Karang</div>
+                  <table class="custom-table">
+                    <thead><tr><th>Lokasi</th><th>Provinsi</th><th>Luas</th></tr></thead>
+                    <tbody>
+                      <tr><td>Pulau Lengkuas</td><td>Kep. Babel</td><td>716 m²</td></tr>
+                      <tr><td>Bonetambung</td><td>Sulsel</td><td>1.300 m²</td></tr>
+                      <tr><td>Pesawaran</td><td>Lampung</td><td>100 m²</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- STATUS KERUSAKAN TERUMBU -->
+            <div class="c-section" style="flex: 0.9;">
+              <div class="c-section-title">Status Kerusakan Terumbu <span style="float:right; color:#38bdf8; font-size:10px;">849 titik</span></div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="chart-box">
+                  <canvas id="coralDonutChart"></canvas>
+                  <div class="chart-center-text">
+                    <div class="num">849</div>
+                    <div class="lbl">titik pantau</div>
+                  </div>
+                </div>
+                <div style="font-size:10px; display:flex; flex-direction:column; gap:4px; flex:1;">
+                  <div style="display:flex; justify-content:space-between;"><span style="color:#22c55e;">● Sangat Baik</span><strong>124</strong></div>
+                  <div style="display:flex; justify-content:space-between;"><span style="color:#10b981;">● Baik</span><strong>162</strong></div>
+                  <div style="display:flex; justify-content:space-between;"><span style="color:#facc15;">● Sedang</span><strong>270</strong></div>
+                  <div style="display:flex; justify-content:space-between;"><span style="color:#ef4444;">● Buruk</span><strong>293</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MANGROVE -->
+            <div class="c-section" style="flex: 1.5;">
+              <div class="c-section-title">Mangrove</div>
+              <div style="display:flex; gap:10px;">
+                <div class="stat-box" style="flex:0.8;">
+                  <div class="stat-label">Luas Penanaman Mangrove</div>
+                  <div style="font-size:20px; font-weight:800; color:#34d399;">426,8 ha</div>
+                  <div style="font-size:10px; color:#64748b;">128 lokasi penanaman</div>
+                </div>
+                <div class="stat-box" style="flex:0.8; border-color:#eab308;">
+                  <div class="stat-label">Total Pohon Mangrove</div>
+                  <div style="font-size:20px; font-weight:800; color:#facc15;">1.284.650</div>
+                  <div style="font-size:10px; color:#64748b;">Bibit telah ditanam</div>
+                </div>
+                <div style="flex:1.4;">
+                  <div style="font-size:10px; color:#94a3b8; margin-bottom:4px;">Lokasi Penanaman Mangrove <span style="float:right; color:#64748b;">Realisasi tertinggi</span></div>
+                  <table class="custom-table">
+                    <thead>
+                      <tr><th>Lokasi</th><th>Provinsi</th><th>Luas</th><th>Pohon</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Demak</td><td>Jawa Tengah</td><td>46,2 ha</td><td style="font-weight:700;">138.600</td></tr>
+                      <tr><td>Tarakan</td><td>Kalimantan Utara</td><td>38,5 ha</td><td style="font-weight:700;">115.500</td></tr>
+                      <tr><td>Langkat</td><td>Sumatera Utara</td><td>32,7 ha</td><td style="font-weight:700;">98.100</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- OIL SPILL SECTION -->
+            <div class="c-section" style="flex: 2.2;">
+              <div class="c-section-title">Oil Spill</div>
+              <div style="display:flex; gap:12px;">
+                
+                <div class="stat-box" style="flex:0.7; border-color:#f97316;">
+                  <div class="stat-label" style="font-weight:700; color:#fed7aa; line-height:1.2;" id="oilSpillBoxTitle">Total Kejadian Oil Spill ...</div>
+                  <div style="font-size:28px; font-weight:800; color:#fb923c; margin: 8px 0 4px 0;" id="oilSpillTotalNum">...</div>
+                  <div style="font-size:9.5px; color:#94a3b8; line-height:1.3;">berdasarkan data historis yang teridentifikasi</div>
+                </div>
+
+                <div style="flex:2;">
+                  <div style="font-size:10px; color:#94a3b8; margin-bottom:4px;">Lokasi Kejadian Oil Spill</div>
+                  <div class="table-scroll-container">
+                    <table class="custom-table">
+                      <thead>
+                        <tr>
+                          <th>Provinsi</th>
+                          <th>Lokasi</th>
+                          <th>Tahun</th>
+                          <th>Estimasi Tumpahan</th>
+                          <th>Jenis Tumpahan</th>
+                        </tr>
+                      </thead>
+                      <tbody id="oilSpillTableBody">
+                        <tr>
+                          <td colspan="5" style="text-align:center; color:#94a3b8; padding:12px;">Memuat data...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- PERTEK & SLO -->
+            <div class="c-section" style="flex: 1.2;">
+              <div class="c-section-title">Pertek & SLO</div>
+              <div style="display:flex; gap:10px;">
+                <div class="stat-box" style="flex:0.8;">
+                  <div class="stat-label">Industri Buang Air Limbah</div>
+                  <div style="font-size:22px; font-weight:800; color:#38bdf8;">186</div>
+                  <div style="font-size:10px; color:#64748b;">164 memiliki Pertek</div>
+                </div>
+                <div style="flex:1.5;">
+                  <div style="font-size:10px; color:#94a3b8; margin-bottom:4px;">Belum Mengajukan SLO <span style="float:right; color:#f87171;">Melewati tenggat</span></div>
+                  <table class="custom-table">
+                    <thead><tr><th>Perusahaan</th><th>Tenggat</th><th>Terlambat</th></tr></thead>
+                    <tbody>
+                      <tr><td>PT Samudra Kimia</td><td>15 Jun 2026</td><td style="color:#f87171; font-weight:700;">86 hari</td></tr>
+                      <tr><td>PT Industri Maritim</td><td>28 Jun 2026</td><td style="color:#f87171; font-weight:700;">73 hari</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="carousel-navigation">
+          <i data-lucide="chevron-left" class="nav-arrow" onclick="scrollCarousel(-300)"></i>
+          <div class="h-scroll-track">
+            <div class="h-scroll-thumb" id="hScrollThumb"></div>
+          </div>
+          <i data-lucide="chevron-right" class="nav-arrow" onclick="scrollCarousel(300)"></i>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // --- 1. INITIALIZE LEAFLET MAP ---
+    const map = L.map('leaflet-map', {
+      center: [-2.5489, 118.0149],
+      zoom: 5,
+      zoomControl: false
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; Leaflet | OpenStreetMap'
+    }).addTo(map);
+
+    const oilSpillLayerGroup = L.layerGroup().addTo(map);
+
+    function toggleOilSpillLayers() {
+      if (map.hasLayer(oilSpillLayerGroup)) {
+        map.removeLayer(oilSpillLayerGroup);
+      } else {
+        map.addLayer(oilSpillLayerGroup);
+      }
+    }
+
+    function scrollIKAL(amount) {
+      const el = document.getElementById('ikalScrollContainer');
+      if (el) el.scrollTop += amount;
+    }
+
+    function scrollCarousel(amount) {
+      const el = document.getElementById('carouselTrack');
+      if (el) el.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+
+    // --- 2. CSV PARSER ---
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      return lines.map(line => {
+        const values = [];
+        let insideQuote = false;
+        let currentValue = '';
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            insideQuote = !insideQuote;
+          } else if (char === ',' && !insideQuote) {
+            values.push(currentValue.trim().replace(/^"|"$/g, ''));
+            currentValue = '';
+          } else {
+            currentValue += char;
+          }
+        }
+        values.push(currentValue.trim().replace(/^"|"$/g, ''));
+        return values;
+      });
+    }
+
+    // --- 3. FORMAT POPUP SEJAJAR DAN HANYA SAMPAI PENANGANAN ---
+    function addOilSpillMarker(lat, lng, loc, prov, date, cause, type, est, action) {
+      const marker = L.circleMarker([lat, lng], {
+        radius: 8,
+        fillColor: '#ef4444',
+        color: '#fca5a5',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.85
+      });
+
+      // Pengecekan teks merah untuk Estimasi Tumpahan
+      const isEstMissing = est.toLowerCase().includes('tidak ditemukan');
+      const estFormatted = isEstMissing ? `<span class="text-missing">${est}</span>` : est;
+
+      marker.bindPopup(`
+        <div style="color:#0f172a; font-family:'Plus Jakarta Sans', sans-serif; font-size:12px; line-height:1.5; min-width:300px;">
+          <strong style="color:#dc2626; font-size:13px; display:block; margin-bottom:8px;">⚠️ Kejadian Oil Spill</strong>
+          
+          <div style="display: grid; grid-template-columns: 120px 10px 1fr; gap: 4px 0; align-items: start;">
+            <span style="font-weight:700;">Provinsi</span><span>:</span><span>${prov}</span>
+            <span style="font-weight:700;">Lokasi</span><span>:</span><span>${loc}</span>
+            <span style="font-weight:700;">Titik Koordinat</span><span>:</span><span>${lat}, ${lng}</span>
+            <span style="font-weight:700;">Tanggal Kejadian</span><span>:</span><span>${date}</span>
+            <span style="font-weight:700;">Jenis Tumpahan</span><span>:</span><span style="color:#0284c7; font-weight:700;">${type}</span>
+            <span style="font-weight:700;">Estimasi Tumpahan</span><span>:</span><span>${estFormatted}</span>
+            <span style="font-weight:700;">Penyebab</span><span>:</span><span>${cause}</span>
+            <span style="font-weight:700;">Penanganan</span><span>:</span><span>${action}</span>
+          </div>
+        </div>
+      `);
+
+      marker.addTo(oilSpillLayerGroup);
+    }
+
+    // --- 4. FETCH DATA FROM SPREADSHEET TAB "Oil Spill (2)" (gid: 296430431) ---
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1VZb_j_iaMJXRX56AFjVvUyJLQSEW1vx23dwgG3-4a0U/gviz/tq?tqx=out:csv&gid=296430431';
+
+    async function loadOilSpillData() {
+      const tbody = document.getElementById('oilSpillTableBody');
+      const bounds = [];
+
+      try {
+        const response = await fetch(csvUrl);
+        const csvText = await response.text();
+        const dataRows = parseCSV(csvText);
+
+        oilSpillLayerGroup.clearLayers();
+        tbody.innerHTML = '';
+
+        if (dataRows.length > 1) {
+          const rows = dataRows.slice(1).filter(r => r.length >= 3 && r[0] !== '');
+          const totalCount = rows.length;
+
+          document.getElementById('oilSpillTotalNum').innerText = totalCount;
+          document.getElementById('oilSpillBoxTitle').innerText = `Total Kejadian Oil Spill ${totalCount}`;
+
+          rows.forEach((row) => {
+            /* 
+               PEMETAAN KOLOM SPREADSHEET:
+               A (0) -> ID
+               B (1) -> Lokasi
+               C (2) -> Provinsi
+               D (3) -> Tanggal Kejadian
+               E (4) -> LATITUDE  (-6,964725)
+               F (5) -> LONGITUDE (114,177406)
+               G (6) -> Lat, Lon
+               H (7) -> Penyebab
+               I (8) -> Jenis Tumpahan
+               J (9) -> Estimasi Tumpahan
+               K (10)-> Tindak Lanjut / Penanganan
+            */
+            const loc = row[1] || '-';
+            const prov = row[2] || '-';
+            const dateStr = row[3] || '-';
+            const cause = row[7] || '-';
+            const type = row[8] || '-';
+            const est = row[9] || '-';
+            const action = row[10] || '-';
+
+            // Ekstrak Tahun 4 digit
+            const yearMatch = dateStr.match(/\d{4}/);
+            const year = yearMatch ? yearMatch[0] : dateStr;
+
+            // Koordinat Latitude & Longitude
+            let rawLat = row[4] ? row[4].replace(',', '.') : '';
+            let rawLng = row[5] ? row[5].replace(',', '.') : '';
+            
+            const lat = parseFloat(rawLat);
+            const lng = parseFloat(rawLng);
+
+            // Styling warna jenis tumpahan pada tabel
+            let typeClass = 'type-cyan';
+            const lowerType = type.toLowerCase();
+            if (lowerType.includes('solar') || lowerType.includes('hsd')) {
+              typeClass = 'type-yellow';
+            } else if (lowerType.includes('residue') || lowerType.includes('fo') || lowerType.includes('residu')) {
+              typeClass = 'type-red';
+            }
+
+            // Formatting Estimasi Tumpahan Merah di Tabel jika "tidak ditemukan"
+            const estTableFormatted = est.toLowerCase().includes('tidak ditemukan') ? `<span class="text-missing">${est}</span>` : est;
+
+            // Render Baris Tabel
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${prov}</td>
+              <td>${loc}</td>
+              <td>${year}</td>
+              <td>${estTableFormatted}</td>
+              <td><span class="${typeClass}">${type}</span></td>
+            `;
+            tbody.appendChild(tr);
+
+            // Plot Marker di Leaflet Map jika koordinat valid
+            if (!isNaN(lat) && !isNaN(lng)) {
+              addOilSpillMarker(lat, lng, loc, prov, dateStr, cause, type, est, action);
+              bounds.push([lat, lng]);
+            }
+          });
+
+          if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [40, 40] });
+          }
+        }
+      } catch (err) {
+        console.error('Gagal mengambil data CSV:', err);
+      }
+    }
+
+    // --- 5. EXECUTE ALL SCRIPTS ---
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+
+      const ctx = document.getElementById('coralDonutChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Sangat Baik', 'Baik', 'Sedang', 'Buruk'],
+          datasets: [{
+            data: [124, 162, 270, 293],
+            backgroundColor: ['#22c55e', '#10b981', '#facc15', '#ef4444'],
+            borderWidth: 0,
+            cutout: '75%'
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      const carouselTrack = document.getElementById('carouselTrack');
+      const hScrollThumb = document.getElementById('hScrollThumb');
+      if (carouselTrack && hScrollThumb) {
+        carouselTrack.addEventListener('scroll', () => {
+          const maxScroll = carouselTrack.scrollWidth - carouselTrack.clientWidth;
+          const scrollPercent = carouselTrack.scrollLeft / maxScroll;
+          const trackWidth = carouselTrack.clientWidth - 250;
+          hScrollThumb.style.left = (scrollPercent * trackWidth) + 'px';
+        });
+      }
+
+      loadOilSpillData();
+    });
+  </script>
+</body>
+</html>
