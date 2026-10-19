@@ -911,27 +911,51 @@
       if (el) el.scrollBy({ left: amount, behavior: 'smooth' });
     }
 
-    // --- 2. CSV PARSER ---
+    // --- 2. CSV PARSER (aman untuk sel berisi Enter, koma, dan tanda kutip) ---
     function parseCSV(text) {
-      const lines = text.trim().split('\n');
-      return lines.map(line => {
-        const values = [];
-        let insideQuote = false;
-        let currentValue = '';
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          if (char === '"') {
-            insideQuote = !insideQuote;
-          } else if (char === ',' && !insideQuote) {
-            values.push(currentValue.trim().replace(/^"|"$/g, ''));
-            currentValue = '';
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (inQuotes) {
+          if (char === '"' && next === '"') {
+            cell += '"';   // tanda kutip ganda di dalam sel
+            i++;
+          } else if (char === '"') {
+            inQuotes = false;
           } else {
-            currentValue += char;
+            cell += char;  // termasuk Enter di dalam sel
+          }
+        } else {
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ',') {
+            row.push(cell.trim());
+            cell = '';
+          } else if (char === '\n' || char === '\r') {
+            if (char === '\r' && next === '\n') i++;
+            row.push(cell.trim());
+            rows.push(row);
+            row = [];
+            cell = '';
+          } else {
+            cell += char;
           }
         }
-        values.push(currentValue.trim().replace(/^"|"$/g, ''));
-        return values;
-      });
+      }
+
+      // simpan baris terakhir jika file tidak diakhiri Enter
+      if (cell !== '' || row.length > 0) {
+        row.push(cell.trim());
+        rows.push(row);
+      }
+
+      return rows;
     }
 
     // --- 3. FORMAT POPUP SEJAJAR DAN 'TINDAK LANJUT' ---
@@ -985,12 +1009,21 @@
         tbody.innerHTML = '';
 
         if (dataRows.length > 1) {
-          // FILTER STRICT: Mengabaikan baris header 'ID' atau baris non-angka agar total pas 35
-          const rows = dataRows.slice(1).filter(r => {
+          // FILTER STRICT:
+          // - kolom ID harus angka murni (header "ID", baris kosong, dan sisa teks otomatis tersaring)
+          // - Lokasi dan Provinsi wajib terisi
+          const rows = dataRows.filter(r => {
             if (!r || r.length < 3) return false;
-            const firstCol = (r[0] || '').trim();
-            return firstCol !== '' && firstCol.toLowerCase() !== 'id' && !isNaN(parseInt(firstCol, 10));
+            const id = (r[0] || '').trim();
+            const lokasi = (r[1] || '').trim();
+            const prov = (r[2] || '').trim();
+            return /^\d+$/.test(id) && lokasi !== '' && prov !== '';
           });
+
+          // Pengecekan ID dobel (muncul di Console kalau ada)
+          const ids = rows.map(r => r[0]);
+          const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+          if (dupes.length) console.warn('ID dobel terdeteksi:', dupes);
 
           const totalCount = rows.length;
 
